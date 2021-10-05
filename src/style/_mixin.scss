@@ -1,0 +1,27 @@
+@mixin border-background {
+  padding: $default-padding;
+  background-color: $white;
+  border: 1px solid $light-gray-border;
+  border-radius: $main-radius;
+}
+
+@mixin input-style {
+  padding-bottom: 5px;
+  background-color: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: $main-blue;
+  font-size: 25px;
+
+  &::placeholder {
+    opacity: 0.5;
+    color: $main-blue;
+    text-align: center;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: $main-blue;
+    transition: border-color 0.5s ease-in-out;
+  }
+}

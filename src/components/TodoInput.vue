@@ -1,7 +1,12 @@
 <template>
-  <div>
+  <div :class="$style.todo_input__container">
     <form @submit="handleSubmit">
-      <input type="text" :value="inputValue" @input="handleInput" />
+      <input
+        type="text"
+        :value="inputValue"
+        @input="handleInput"
+        placeholder="Write your todos"
+      />
       <button>Submit</button>
     </form>
   </div>
@@ -31,12 +36,35 @@ export default {
 };
 </script>
 
-<style scoped>
-div {
-  padding: 20px;
-}
+<style lang="scss" module>
+.todo_input__container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  @include border-background;
 
-div span {
-  margin: 20px;
+  form {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+
+    input {
+      width: 80%;
+      @include input-style;
+    }
+
+    button {
+      all: unset;
+      width: 10%;
+      margin-right: 5px;
+      padding: 8px;
+      background-color: $main-blue;
+      border-radius: $main-radius;
+      color: $white;
+      text-align: center;
+      cursor: pointer;
+    }
+  }
 }
 </style>
