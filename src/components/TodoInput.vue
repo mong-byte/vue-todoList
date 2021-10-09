@@ -3,7 +3,7 @@
     <form @submit="handleSubmit">
       <input
         type="text"
-        :value="inputValue"
+        :value="state.inputValue"
         @input="handleInput"
         placeholder="Write your todos"
       />
@@ -13,25 +13,29 @@
 </template>
 
 <script>
+import { reactive } from "@vue/reactivity";
 export default {
   name: "todo-input",
-  data() {
-    return {
+  setup(props, { emit }) {
+    const state = reactive({
       inputValue: "",
+    });
+
+    const addTodos = (value) => {
+      emit("add", value);
     };
-  },
-  methods: {
-    addTodos(value) {
-      this.$emit("add", value);
-    },
-    handleSubmit(event) {
+
+    const handleSubmit = (event) => {
       event.preventDefault();
-      this.addTodos(this.inputValue);
-      this.inputValue = "";
-    },
-    handleInput(event) {
-      this.inputValue = event.target.value;
-    },
+      addTodos(state.inputValue);
+      state.inputValue = "";
+    };
+
+    const handleInput = (event) => {
+      state.inputValue = event.target.value;
+    };
+
+    return { state, addTodos, handleSubmit, handleInput };
   },
 };
 </script>

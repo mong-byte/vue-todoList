@@ -1,19 +1,20 @@
 <template>
   <div :class="$style.todo_container">
-    <div :class="$style.todo_contents_wrapper" v-if="!editMode">
-      <span :class="$style.todo_contents">{{ todo }}</span>
+    <div :class="$style.todo_contents_wrapper" v-if="!state.editMode">
+      <span :class="$style.todo_contents">{{ props.content }}</span>
     </div>
     <input
       :class="$style.edit_input"
-      v-if="editMode"
+      v-if="state.editMode"
+      :value="state.editedValue"
       type="text"
       @input="editInput"
     />
-    <div :class="$style.todo_button_box" v-if="!editMode">
+    <div :class="$style.todo_button_box" v-if="!state.editMode">
       <button @click="toggleEdit">edit</button>
       <button @click="handleDelete">done</button>
     </div>
-    <div :class="$style.todo_button_box" v-if="editMode">
+    <div :class="$style.todo_button_box" v-if="state.editMode">
       <button @click="saveEdit">save</button>
       <button @click="toggleEdit">exit</button>
     </div>
@@ -21,32 +22,36 @@
 </template>
 
 <script>
+import { reactive } from "@vue/reactivity";
 export default {
   name: "Todo",
-  data() {
-    return {
-      editMode: false,
-      editedValue: "",
-    };
-  },
   props: {
-    todo: String,
+    content: String,
     todoId: String,
   },
-  methods: {
-    handleDelete() {
-      this.$emit("deleteTodo", this.todoId);
-    },
-    toggleEdit() {
-      this.editMode = !this.editMode;
-    },
-    editInput(event) {
-      this.editedValue = event.target.value;
-    },
-    saveEdit() {
-      this.$emit("editTodo", this.todoId, this.editedValue);
-      this.toggleEdit();
-    },
+  setup(props, { emit }) {
+    const state = reactive({
+      editMode: false,
+      editedValue: "",
+    });
+
+    const handleDelete = () => {
+      emit("deleteTodo", props.todoId);
+    };
+    const toggleEdit = () => {
+      state.editMode = !state.editMode;
+    };
+
+    const editInput = (event) => {
+      state.editedValue = event.target.value;
+    };
+
+    const saveEdit = () => {
+      emit("editTodo", props.todoId, state.editedValue);
+      toggleEdit();
+    };
+
+    return { props, handleDelete, toggleEdit, editInput, saveEdit, state };
   },
 };
 </script>

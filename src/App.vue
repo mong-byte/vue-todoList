@@ -1,11 +1,11 @@
 <template>
   <div :id="$style.todo_page">
-    <TitleViewer @add="addTodo" />
+    <TodoInput @add="addTodo" />
     <div :class="$style.todo_list_wrapper">
       <ul :class="$style.todo_list" v-if="todos.length">
         <li v-for="todo in todos" :key="todo.id">
           <Todo
-            :todo="todo.todo"
+            :content="todo.content"
             :todoId="todo.id"
             @deleteTodo="deleteTodo"
             @editTodo="editTodo"
@@ -18,46 +18,35 @@
 </template>
 
 <script>
-import TitleViewer from "./components/TodoInput.vue";
+import { computed } from "@vue/reactivity";
+import TodoInput from "./components/TodoInput.vue";
 import Todo from "./components/Todo.vue";
 import NoItem from "./components/NoItem.vue";
-import { v4 as uuidv4 } from "uuid";
+import { useStore } from "vuex";
 export default {
   name: "App",
-  data() {
-    return {
-      todos: [],
-    };
-  },
-  methods: {
-    addTodo(value) {
+  setup() {
+    const store = useStore();
+    const todos = computed(() => store.state.todos).value;
+
+    const addTodo = (value) => {
       if (value) {
-        const todoObj = {
-          id: uuidv4(),
-          todo: value,
-        };
-        const newTodos = this.todos.concat(todoObj);
-        this.todos = newTodos;
+        store.commit("addTodos", value);
       }
-    },
-    deleteTodo(id) {
-      const filterTodos = this.todos.filter((todo) => todo.id !== id);
-      this.todos = filterTodos;
-    },
-    editTodo(id, value) {
-      const editedTodos = this.todos.map((todo) => {
-        return todo.id !== id
-          ? todo
-          : {
-              ...todo,
-              todo: value,
-            };
-      });
-      this.todos = editedTodos;
-    },
+    };
+
+    const deleteTodo = (id) => {
+      store.commit("deleteTodos", id);
+    };
+
+    const editTodo = (id, value) => {
+      store.commit("editTodos", { id, value });
+    };
+
+    return { todos, addTodo, deleteTodo, editTodo };
   },
   components: {
-    TitleViewer,
+    TodoInput,
     Todo,
     NoItem,
   },
